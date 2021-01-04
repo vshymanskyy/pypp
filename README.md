@@ -11,9 +11,33 @@ pip3 install https://github.com/vshymanskyy/pypp/archive/main.zip
 
 ## Usage example
 
-**HTML**
+Python 3 can be directly used to generate other files:
 
-Template:
+```py
+from random import randrange
+
+TITLE = "Hello"
+
+print(f"""<!DOCTYPE html>
+<html><body>
+  <h1>{TITLE}</h1>
+  <ul>
+  <!-- Some random numbers! -->
+""")
+for i in range(5):
+    print(f"<li>{randrange(1,100)}</li>", end="")
+print()
+print(f"""  </ul>
+</body></html>
+""")
+```
+
+It turns out to be very flexible, but there are several problems with this approach:  
+Unreadable, too much boilerplate. Characters like `{}\` need to be manually escaped in `f-strings`, so it's unusable for processing `C/C++`, `Java`, `JS/JSON`, `Python` files. Python code draws a lot of attention, but it should be secondary here. If you want to include other files it becomes even more unreadable, etc.
+
+PYPP is based on the same idea, but it tries to solve the above issues.
+
+This is an equivalent PYPP template:
 ```py
 <!DOCTYPE html>
 <html><body>
