@@ -1,0 +1,7 @@
+#!/usr/bin/env python3
+
+import sys
+import pypp
+
+if __name__ == '__main__':
+    pypp.process(sys.argv[1])
