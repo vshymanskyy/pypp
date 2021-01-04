@@ -74,8 +74,8 @@ After running `pypp template.html > result.html`, you get:
 
 Template:
 ```wasm
-#import('pypp.lang.wasm')        # Import WebAssembly helpers
-#replace(';;.*?\n','\n')    # Remove comments
+#import('pypp.lang.wasm')       # import WebAssembly helpers
+#replace(';;.*?\n','\n')        # remove comments
 
 #begin
 ANSWER = 40
