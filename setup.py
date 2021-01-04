@@ -13,8 +13,8 @@ setup(
     author_email = "vshymanskyi@gmail.com",
 
     scripts      = ['bin/pypp'],
-    py_modules   = ['pypp'],
-    packages     = ['lang'],
+    py_modules   = ['pypp/pypp'],
+    packages     = ['pypp/lang'],
 
     classifiers  = [
         "Topic :: Software Development :: Libraries :: Python Modules",

@@ -47,7 +47,7 @@ def process(path, fn, sandbox = createSandbox()):
         "_replace":     _replace,
     })
     
-    exec("import lang.common", sandbox)
+    exec("import pypp.lang.common", sandbox)
 
     #process text
 
