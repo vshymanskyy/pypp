@@ -10,6 +10,7 @@ pip3 install https://github.com/vshymanskyy/pypp/master.zip
 
 **HTML**
 
+Template:
 ```python
 <!DOCTYPE html>
 <html><body>
@@ -25,7 +26,9 @@ print()
   </ul>
 </body></html>
 ```
-Which transforms to:
+
+After running `pypp template.html > result.html`, you get: 
+
 ```html
 <!DOCTYPE html>
 <html><body>
@@ -39,6 +42,7 @@ Which transforms to:
 
 **WebAssembly**
 
+Template:
 ```wasm
 ;; Import WebAssembly helpers
 #import "lang.wasm"
@@ -62,7 +66,7 @@ ANSWER = 40
 )
 ```
 
-Which transforms to:
+Result (comments removed manually):
 ```wasm
 (module
   (memory (export "mem") 1)
