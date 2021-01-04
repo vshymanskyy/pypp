@@ -10,28 +10,43 @@ class dotdict(dict):
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
 
-def process(path, fn, sandbox = {}):
-    # reassemble path and fn
-    full_fn = os.path.join(path, fn)
-    (path, fn) = os.path.split(full_fn)
+def createSandbox():
+    sandbox = {}
+    sandbox["defined"] = lambda name: name in sandbox
+    sandbox["__pypp"] = dotdict({
+        "stack": []
+    })
+    return sandbox
 
-    preprocessors = []
+def process(path, fn, sandbox = createSandbox()):
+    # reassemble path and fn
+    full_fn = os.path.relpath(os.path.join(path, fn))
+    (path, fn) = os.path.split(full_fn)
+    
+    __pypp = sandbox["__pypp"]
+    
+    # check for cyclic include
+    if any([os.path.samefile(full_fn, x) for x in __pypp.stack]):
+        __pypp.stack.append(full_fn)
+        raise Exception("Cyclic include:\n" + " ->\n".join(__pypp.stack))
+    
+    __pypp.stack.append(full_fn)
     
     # directives
+    preprocessors = []
     
     def _import(s):     exec(f"from {s} import *", sandbox)
     def _include(s):    process(path, s, sandbox.copy())
     def _replace(a,b):  preprocessors.append(lambda s: re.sub(a, b, s))
-
+    
     # initialize sandbox
-
-    sandbox["__pypp_d"] = dotdict({
+    
+    __pypp.d = dotdict({
         "_import":      _import,
         "_include":     _include,
         "_replace":     _replace,
     })
-    sandbox["defined"] = lambda name: name in sandbox
-
+    
     exec("import lang.common", sandbox)
 
     #process text
@@ -52,7 +67,7 @@ def process(path, fn, sandbox = {}):
                             raise Exception("#end should come after a matching #begin")
                         code_block = False
                     elif block.startswith("#import") or block.startswith("#include") or block.startswith("#replace"):
-                        exec(f"__pypp_d._{block[1:]}", sandbox)
+                        exec(f"__pypp.d._{block[1:]}", sandbox)
             else:
                 block = "".join(group)
                 if code_block:
