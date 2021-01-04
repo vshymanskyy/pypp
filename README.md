@@ -1,5 +1,8 @@
 # PYPP - Python PreProcessor
 
+**PYPP** formats the whole file using `f-string` syntax, with some additional helper directives and functions.  
+It should be able to process any text: source code, config files, docs, etc. (after `custom delimiters` are implemented).
+
 ## Install
 
 ```sh
@@ -11,7 +14,7 @@ pip3 install https://github.com/vshymanskyy/pypp/archive/main.zip
 **HTML**
 
 Template:
-```python
+```py
 <!DOCTYPE html>
 <html><body>
   <h1>Hello PYPP</h1>
@@ -85,7 +88,7 @@ Result (comments removed manually):
 `TODO`
 
 ### `#include <expr>`
-Includes another template file (and expands it).
+Include (and expand) another template file.  
 Any Python expression can be used as an argument, like: `'utils.wat'`, `f'{HEADER}.html'`, etc.
 
 ### `#import <expr>`
@@ -101,7 +104,19 @@ It simplifies importing language-specific helper modules:
 ```
 
 ### `#begin`..`#end`
-Runs arbitrary Python code
+Run arbitrary Python code
+
+## Ideas (not implemented!)
+
+### `#delim "<%" "%>"`
+Set custom delimiters.
+
+### `#replace "hello" "world"`
+Replace arbitrary text.
+
+### `#run_with f'command {file} {args}'`
+Store output to a temporary file, and execute command automatically.  
+When combined with `#!/usr/bin/env pypp`, this should allow preprocessing and executing any templates as ordinary scripts.
 
 __________
 
