@@ -26,8 +26,8 @@ print(f"""<!DOCTYPE html>
 """)
 for i in range(5):
     print(f"<li>{randrange(1,100)}</li>", end="")
-print()
-print(f"""  </ul>
+print(f"""
+  </ul>
 </body></html>
 """)
 ```
@@ -39,9 +39,12 @@ PYPP is based on the same idea, but it tries to solve the above issues.
 
 This is an equivalent PYPP template:
 ```py
+#begin
+TITLE = "Hello PYPP"
+#end
 <!DOCTYPE html>
 <html><body>
-  <h1>Hello PYPP</h1>
+  <h1>{TITLE}</h1>
   <ul>
   <!-- Some random numbers! -->
 #begin
