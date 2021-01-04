@@ -85,12 +85,23 @@ Result (comments removed manually):
 `TODO`
 
 ### `#include <expr>`
+Includes another template file (and expands it).
+Any Python expression can be used as an argument, like: `'utils.wat'`, `f'{HEADER}.html'`, etc.
 
 ### `#import <expr>`
+Equivalent to:
+```
+#begin
+from something import *
+#end
+```
+It simplifies importing language-specific helper modules:
+```
+#import "lang.wasm"
+```
 
 ### `#begin`..`#end`
-
-### `#run_with`
+Runs arbitrary Python code
 
 __________
 
