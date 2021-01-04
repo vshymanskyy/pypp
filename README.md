@@ -85,8 +85,6 @@ Result:
 
 ## Directives
 
-`TODO`
-
 ### `#include(<expr>)`
 Include (and expand) another template file.  
 Any Python expression can be used as an argument, like: `'utils.wat'`, `f'{HEADER}.html'`, etc.
@@ -104,7 +102,7 @@ It simplifies importing language-specific helper modules:
 ```
 
 ### `#begin`..`#end`
-Run arbitrary Python code
+Run arbitrary Python code.
 
 ### `#replace(<regex>, <string>)`
 Replace arbitrary text.
@@ -114,9 +112,12 @@ Replace arbitrary text.
 ### `#delim('<%', '%>')`
 Set custom delimiters.
 
+### `#if(<expr>)`..`#elif(<expr>)`..`#else`..`#end`
+Conditional block output.
+
 ### `#run_with(f'command {file} {args}'`)
 Store output to a temporary file, and execute command automatically.
-When combined with `#!/usr/bin/env pypp`, this should allow preprocessing and executing any templates as ordinary scripts.
+In conjunction with `#!/usr/bin/env pypp`, this should allow preprocessing and executing any templates as ordinary scripts.
 
 __________
 
