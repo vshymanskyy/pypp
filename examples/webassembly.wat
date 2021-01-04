@@ -1,5 +1,5 @@
-;; Import WebAssembly helpers
-#import "lang.wasm"
+#import('lang.wasm')        # Import WebAssembly helpers
+#replace(';;.*?\n','\n')    # Remove comments
 
 #begin
 ANSWER = 40

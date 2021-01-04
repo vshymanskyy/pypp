@@ -4,4 +4,4 @@ import sys
 import pypp
 
 if __name__ == '__main__':
-    pypp.process(sys.argv[1])
+    pypp.process("./", sys.argv[1])

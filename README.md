@@ -47,8 +47,8 @@ After running `pypp template.html > result.html`, you get:
 
 Template:
 ```wasm
-;; Import WebAssembly helpers
-#import "lang.wasm"
+#import('lang.wasm')        # Import WebAssembly helpers
+#replace(';;.*?\n','\n')    # Remove comments
 
 #begin
 ANSWER = 40
@@ -69,7 +69,7 @@ ANSWER = 40
 )
 ```
 
-Result (comments removed manually):
+Result:
 ```wasm
 (module
   (memory (export "mem") 1)
@@ -87,11 +87,11 @@ Result (comments removed manually):
 
 `TODO`
 
-### `#include <expr>`
+### `#include(<expr>)`
 Include (and expand) another template file.  
 Any Python expression can be used as an argument, like: `'utils.wat'`, `f'{HEADER}.html'`, etc.
 
-### `#import <expr>`
+### `#import(<expr>)`
 Equivalent to:
 ```
 #begin
@@ -100,21 +100,21 @@ from something import *
 ```
 It simplifies importing language-specific helper modules:
 ```
-#import "lang.wasm"
+#import('lang.wasm')
 ```
 
 ### `#begin`..`#end`
 Run arbitrary Python code
 
-## Ideas (not implemented!)
-
-### `#delim '<%' '%>'`
-Set custom delimiters.
-
-### `#replace 'hello' 'world'`
+### `#replace(<regex>, <string>)`
 Replace arbitrary text.
 
-### `#run_with f'command {file} {args}'`
+## Ideas (not implemented!)
+
+### `#delim('<%', '%>')`
+Set custom delimiters.
+
+### `#run_with(f'command {file} {args}'`)
 Store output to a temporary file, and execute command automatically.
 When combined with `#!/usr/bin/env pypp`, this should allow preprocessing and executing any templates as ordinary scripts.
 
