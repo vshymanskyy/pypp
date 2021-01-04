@@ -3,7 +3,7 @@
 ## Install
 
 ```sh
-pip3 install https://github.com/vshymanskyy/pypp/master.zip
+pip3 install https://github.com/vshymanskyy/pypp/archive/main.zip
 ```
 
 ## Usage example
