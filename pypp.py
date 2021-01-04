@@ -10,47 +10,33 @@ class dotdict(dict):
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
 
-sandbox = {
-    "defined": lambda name: name in sandbox,
-}
-
-preprocessors = []
-
-def expr(s):
-    exec(f'__res = {s}', sandbox)
-    r = sandbox["__res"]
-    del sandbox["__res"]
-    return r
-
-def process_code(s):
-    exec(s, sandbox)
-    
-def process_text(s):
-    s = s.replace('\\', '\\\\')
-    
-    for pre in preprocessors:
-        s = pre(s)
-    print(expr(f'f"""{s}"""'), end='')
-
-def process(path, fn):
+def process(path, fn, sandbox = {}):
     # reassemble path and fn
     full_fn = os.path.join(path, fn)
     (path, fn) = os.path.split(full_fn)
 
-    code_block = False
+    preprocessors = []
+    
+    # directives
     
     def _import(s):     exec(f"from {s} import *", sandbox)
-    def _include(s):    process(path, s)
+    def _include(s):    process(path, s, sandbox.copy())
     def _replace(a,b):  preprocessors.append(lambda s: re.sub(a, b, s))
+
+    # initialize sandbox
 
     sandbox["__pypp_d"] = dotdict({
         "_import":      _import,
         "_include":     _include,
         "_replace":     _replace,
     })
+    sandbox["defined"] = lambda name: name in sandbox
 
     exec("import lang.common", sandbox)
 
+    #process text
+
+    code_block = False
     with open(full_fn, 'r') as f:
         for sep, group in itertools.groupby(f, lambda l: l.startswith("#")):
             group = list(group)
@@ -59,7 +45,7 @@ def process(path, fn):
                 for block in group:
                     if block.startswith("#begin"):
                         if code_block:
-                            raise Exception("#begin 2nd time inside the same code block")
+                            raise Exception("#begin inside code block")
                         code_block = True
                     elif block.startswith("#end"):
                         if not code_block:
@@ -71,7 +57,15 @@ def process(path, fn):
                 block = "".join(group)
                 if code_block:
                     #print("CODE:", group)
-                    process_code(block)
+                    exec(block, sandbox)
                 else:
                     #print("TEXT:", group)
-                    process_text(block)
+                    block = block.replace('\\', '\\\\')
+                    
+                    for pre in preprocessors:
+                        block = pre(block)
+                        
+                    exec(f'__res = f"""{block}"""', sandbox)
+                    print(sandbox["__res"], end='')
+                    del sandbox["__res"]
+
