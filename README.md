@@ -108,14 +108,14 @@ Run arbitrary Python code
 
 ## Ideas (not implemented!)
 
-### `#delim "<%" "%>"`
+### `#delim '<%' '%>'`
 Set custom delimiters.
 
-### `#replace "hello" "world"`
+### `#replace 'hello' 'world'`
 Replace arbitrary text.
 
 ### `#run_with f'command {file} {args}'`
-Store output to a temporary file, and execute command automatically.  
+Store output to a temporary file, and execute command automatically.
 When combined with `#!/usr/bin/env pypp`, this should allow preprocessing and executing any templates as ordinary scripts.
 
 __________
