@@ -6,9 +6,6 @@ from pypp.lang.common import *
 __postproc = []
 __preproc = []
 
-def use(s):
-    exec(f"from {s} import *", globals())
-
 def include(s):
     (path, _) = os.path.split(__pypp.stack[-1])
     __process(os.path.join(path, s), globals())
