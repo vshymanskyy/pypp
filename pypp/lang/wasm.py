@@ -6,11 +6,14 @@ import struct, binascii
     https://github.com/WebAssembly/wat-numeric-values
 '''
 
+def hexstr(buff):
+    s = binascii.hexlify(buff).decode()
+    return '"\\'+ '\\'.join([s[i:i+2] for i in range(0, len(s), 2)]) + '"'
+
 def hexdata(fmt):
     def func(*args):
         data = [struct.pack('<'+fmt, x) for x in args]
-        data = ['"\\'+ binascii.hexlify(x, '\\').decode() + '"' for x in data]
-        return ' '.join(data)
+        return ' '.join([hexstr(x) for x in data])
     return func
 
 i8  = hexdata('B')
