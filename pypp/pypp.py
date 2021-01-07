@@ -11,7 +11,7 @@ class dotdict(dict):
     __delattr__ = dict.__delitem__
 
 
-def process(fn, sandbox = None):
+def process(fn, sandbox = None, emit_py = False):
     fn = os.path.relpath(fn)
 
     if sandbox == None:
@@ -38,17 +38,14 @@ from pypp.lang.common import *
 __postproc = []
 __preproc = []
 
-def __import(s):
-    exec(f"from {s} import *", globals())
-
-def __include(s):
+def include(s):
     (path, _) = os.path.split(__pypp.stack[-1])
     __process(os.path.join(path, s), globals())
 
-def __replace(a,b):
+def replace(a,b):
     __preproc.append(lambda s: re.sub(a, b, s))
     
-def __print_block(s):
+def __emit(s):
     for func in __preproc:
         s = func(s)
     exec(f'__res = f\"\"\"{s}\"\"\"', globals())
@@ -75,8 +72,8 @@ def __print_block(s):
                         if not code_block:
                             raise Exception("#end should come after a matching #begin")
                         code_block = False
-                    elif block.startswith("#import") or block.startswith("#include") or block.startswith("#replace"):
-                        pycode += "__" + block[1:]
+                    else:
+                        pycode += block[1:]
             else:
                 block = "".join(group)
                 if code_block:
@@ -85,7 +82,10 @@ def __print_block(s):
                     block = block.replace('\\', '\\\\')
 
                     if len(block.strip()):
-                        pycode += f'__print_block(r"""{block}""")\n'
+                        pycode += f'__emit(r"""{block}""")\n'
 
-        #print(pycode)
-        exec(pycode, sandbox.copy())
+
+        if emit_py:
+            print(pycode)
+        else:
+            exec(pycode, sandbox.copy())

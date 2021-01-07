@@ -1,9 +1,7 @@
-#import("pypp.lang.wasm")       # import WebAssembly helpers
+#from pypp.lang.wasm import *   # use WebAssembly helpers
 #replace(";;.*?\n","\n")        # remove comments
 
-#begin
-ANSWER = 40
-#end
+#ANSWER = 40
 
 (module
   (memory (export "mem") 1)

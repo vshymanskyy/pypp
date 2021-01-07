@@ -16,7 +16,25 @@ class ListStream:
 from pypp import pypp
 import random as rand
 
-def test_mytest():
+def check_py(fn):
+    rand.seed(0)        # reproducible random
+
+    with open(f'./test/expected_{fn}.py', 'r') as f:
+        expected = f.read()
+
+    with ListStream() as out:
+        pypp.process(f'./examples/{fn}', None, True)
+        actual = out.get_data()
+
+    assert(actual == expected)
+
+def test_webasm_py():
+    check_py('webassembly.wat')
+
+def test_webpage_py():
+    check_py('webpage.html')
+
+def test_webpage_html():
     rand.seed(0)        # reproducible random
 
     with open('./test/expected_webpage.html', 'r') as f:

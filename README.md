@@ -39,9 +39,7 @@ PYPP is based on the same idea, but it tries to solve the above issues.
 
 This is an equivalent PYPP template:
 ```py
-#begin
-TITLE = "Hello PYPP"
-#end
+#TITLE = "Hello PYPP"
 <!DOCTYPE html>
 <html><body>
   <h1>{TITLE}</h1>
@@ -74,12 +72,10 @@ After running `pypp template.html > result.html`, you get:
 
 Template:
 ```wasm
-#import('pypp.lang.wasm')       # import WebAssembly helpers
+#from pypp.lang.wasm import *   # use WebAssembly helpers
 #replace(';;.*?\n','\n')        # remove comments
 
-#begin
-ANSWER = 40
-#end
+#ANSWER = 40
 
 (module
   (memory (export "mem") 1)
@@ -115,18 +111,6 @@ Result:
 ### `#include(<expr>)`
 Include (and expand) another template file.  
 Any Python expression can be used as an argument, like: `'utils.wat'`, `f'{HEADER}.html'`, etc.
-
-### `#import(<expr>)`
-Equivalent to:
-```
-#begin
-from something import *
-#end
-```
-It simplifies importing language-specific helper modules:
-```
-#import('lang.wasm')
-```
 
 ### `#begin`..`#end`
 Run arbitrary Python code.
