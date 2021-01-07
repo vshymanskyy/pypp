@@ -10,49 +10,58 @@ class dotdict(dict):
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
 
-def createSandbox():
-    sandbox = {}
-    sandbox["defined"] = lambda name: name in sandbox
-    sandbox["__pypp"] = dotdict({
-        "stack": []
-    })
-    return sandbox
 
-def process(path, fn, sandbox = createSandbox()):
-    # reassemble path and fn
-    full_fn = os.path.relpath(os.path.join(path, fn))
-    (path, fn) = os.path.split(full_fn)
-    
+def process(fn, sandbox = None):
+    fn = os.path.relpath(fn)
+
+    if sandbox == None:
+        sandbox = {}
+        sandbox["defined"] = lambda name: name in sandbox
+        sandbox["__process"] = process
+        sandbox["__pypp"] = dotdict({
+            "stack": []
+        })
+        
     __pypp = sandbox["__pypp"]
     
     # check for cyclic include
-    if any([os.path.samefile(full_fn, x) for x in __pypp.stack]):
-        __pypp.stack.append(full_fn)
+    __pypp.stack.append(fn)
+    if any([os.path.samefile(fn, x) for x in __pypp.stack[:-1]]):
         raise Exception("Cyclic include:\n" + " ->\n".join(__pypp.stack))
+
+    # generate Python code
+    pycode = """
+import re
+import os
+from pypp.lang.common import *
+
+__postproc = []
+__preproc = []
+
+def __import(s):
+    exec(f"from {s} import *", globals())
+
+def __include(s):
+    (path, _) = os.path.split(__pypp.stack[-1])
+    __process(os.path.join(path, s), globals())
+
+def __replace(a,b):
+    __preproc.append(lambda s: re.sub(a, b, s))
     
-    __pypp.stack.append(full_fn)
-    
-    # directives
-    preprocessors = []
-    
-    def _import(s):     exec(f"from {s} import *", sandbox)
-    def _include(s):    process(path, s, sandbox.copy())
-    def _replace(a,b):  preprocessors.append(lambda s: re.sub(a, b, s))
-    
-    # initialize sandbox
-    
-    __pypp.d = dotdict({
-        "_import":      _import,
-        "_include":     _include,
-        "_replace":     _replace,
-    })
-    
-    exec("import pypp.lang.common", sandbox)
+def __print_block(s):
+    for func in __preproc:
+        s = func(s)
+    exec(f'__res = f\"\"\"{s}\"\"\"', globals())
+    s = __res
+    for func in __postproc:
+        s = func(s)
+    print(s)
+"""
 
     #process text
 
     code_block = False
-    with open(full_fn, 'r') as f:
+    with open(fn, 'r') as f:
         for sep, group in itertools.groupby(f, lambda l: l.startswith("#")):
             group = list(group)
             #print(sep, group)
@@ -67,20 +76,16 @@ def process(path, fn, sandbox = createSandbox()):
                             raise Exception("#end should come after a matching #begin")
                         code_block = False
                     elif block.startswith("#import") or block.startswith("#include") or block.startswith("#replace"):
-                        exec(f"__pypp.d._{block[1:]}", sandbox)
+                        pycode += "__" + block[1:]
             else:
                 block = "".join(group)
                 if code_block:
-                    #print("CODE:", group)
-                    exec(block, sandbox)
+                    pycode += block
                 else:
-                    #print("TEXT:", group)
                     block = block.replace('\\', '\\\\')
-                    
-                    for pre in preprocessors:
-                        block = pre(block)
-                        
-                    exec(f'__res = f"""{block}"""', sandbox)
-                    print(sandbox["__res"], end='')
-                    del sandbox["__res"]
 
+                    if len(block.strip()):
+                        pycode += f'__print_block(r"""{block}""")\n'
+
+        #print(pycode)
+        exec(pycode, sandbox.copy())
