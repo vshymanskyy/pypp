@@ -36,7 +36,7 @@ __emit(r"""
 GREETING = "Hello PYPP!"
 __emit(r"""
 int main() {
-    std::cout << %{GREETING}% << "\\n";
+    std::cout << "%{GREETING}%" << "\\n";
 """)
 for x in range(10):
     print(f'std::cout << "{x}";')

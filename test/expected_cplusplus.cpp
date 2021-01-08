@@ -3,7 +3,7 @@
 
 
 int main() {
-    std::cout << Hello PYPP! << "\n";
+    std::cout << "Hello PYPP!" << "\n";
 std::cout << "0";
 std::cout << "1";
 std::cout << "2";
