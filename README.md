@@ -1,7 +1,7 @@
 # PYPP - Python PreProcessor
 
 **PYPP** formats the whole file using `f-string` syntax, with some additional helper directives and functions.  
-It should be able to process any text: source code, config files, docs, etc. (after `custom delimiters` are implemented).
+It should be able to process any text templates: source code, config files, docs, etc.
 
 ## Install
 
@@ -118,10 +118,10 @@ Run arbitrary Python code.
 ### `#replace(<regex>, <string>)`
 Replace arbitrary text.
 
-## Ideas (not implemented!)
-
-### `#delim('<%', '%>')`
+### `#delim('py:', '%{', '}%')`
 Set custom delimiters.
+
+## Ideas (not implemented!)
 
 ### `#if(<expr>)`..`#elif(<expr>)`..`#else`..`#end`
 Conditional block output.
