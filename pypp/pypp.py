@@ -13,13 +13,16 @@ class dotdict(dict):
 
 def process(fn, sandbox = None, emit_py = False):
     fn = os.path.relpath(fn)
+    
+    pydelim = '#'
 
     if sandbox == None:
         sandbox = {}
         sandbox["defined"] = lambda name: name in sandbox
-        sandbox["__process"] = process
         sandbox["__pypp"] = dotdict({
-            "stack": []
+            "stack": [],
+            "delims": ['{', '}'],
+            "process": process,
         })
         
     __pypp = sandbox["__pypp"]
@@ -35,12 +38,23 @@ import re
 import os
 from pypp.lang.common import *
 
-__postproc = []
-__preproc = []
+__preproc = [
+    lambda s: s.replace(__pypp.delims[0], '\\x04'),
+    lambda s: s.replace(__pypp.delims[1], '\\x05'),
+    lambda s: s.replace('{', '\\x02'),
+    lambda s: s.replace('}', '\\x03'),
+    lambda s: s.replace('\\x04', '{'),
+    lambda s: s.replace('\\x05', '}'),
+]
+
+__postproc = [
+    lambda s: s.replace('\\x02', '{'),
+    lambda s: s.replace('\\x03', '}'),
+]
 
 def include(s):
     (path, _) = os.path.split(__pypp.stack[-1])
-    __process(os.path.join(path, s), globals())
+    __pypp.process(os.path.join(path, s), globals())
 
 def replace(a,b):
     __preproc.append(lambda s: re.sub(a, b, s))
@@ -55,17 +69,11 @@ def __emit(s):
     print(s, end='')
 """
 
-    #process text
-    delims = dotdict({
-        'py':  '#',
-        'beg': '%{',
-        'end': '}%',
-    })
-
     def delim(d, b='%{', e='}%'):
-        delims.py  = d
-        delims.beg = b
-        delims.end = e
+        nonlocal pycode, pydelim
+        pydelim = d
+        pycode += f"__pypp.delims[0]='{b}'\n"
+        pycode += f"__pypp.delims[1]='{e}'\n"
 
     code_block = False
     with open(fn, 'r') as f:
@@ -77,20 +85,10 @@ def __emit(s):
             if i < 10 and line.startswith("#!"):         # shebang
                 i += 1
                 continue
-            if line.startswith(delims.py):
-                line = line[len(delims.py):]
+            if line.startswith(pydelim):
+                line = line[len(pydelim):]
                 if line.startswith("delim("):
                     exec(line, globals(), locals())
-
-                    pycode += f"__preproc.append(lambda s: s.replace('{delims.beg}', '\\x04'))\n"
-                    pycode += f"__preproc.append(lambda s: s.replace('{delims.end}', '\\x05'))\n"
-                    pycode += "__preproc.append(lambda s: s.replace('{', '\\x02'))\n"
-                    pycode += "__preproc.append(lambda s: s.replace('}', '\\x03'))\n"
-                    pycode += "__preproc.append(lambda s: s.replace('\\x04', '{'))\n"
-                    pycode += "__preproc.append(lambda s: s.replace('\\x05', '}'))\n"
-
-                    pycode += "__postproc.append(lambda s: s.replace('\\x02', '{'))\n"
-                    pycode += "__postproc.append(lambda s: s.replace('\\x03', '}'))\n"
 
                 elif line.startswith("begin"):
                     if code_block:
@@ -105,7 +103,7 @@ def __emit(s):
                 i += 1
             else:
                 block = []
-                while i < len(lines) and not lines[i].startswith(delims.py):
+                while i < len(lines) and not lines[i].startswith(pydelim):
                     block.append(lines[i])
                     i += 1
                 block = "".join(block)
