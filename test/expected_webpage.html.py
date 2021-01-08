@@ -20,7 +20,7 @@ def __emit(s):
     s = __res
     for func in __postproc:
         s = func(s)
-    print(s)
+    print(s, end='')
 TITLE = "Hello PYPP"
 __emit(r"""
 <!DOCTYPE html>

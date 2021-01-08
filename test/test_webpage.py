@@ -27,21 +27,40 @@ def check_py(fn):
         actual = out.get_data()
 
     assert(actual == expected)
+    
+def check_final(fn):
+    rand.seed(0)        # reproducible random
+
+    with open(f'./test/expected_{fn}', 'r') as f:
+        expected = f.read()
+
+    with ListStream() as out:
+        pypp.process(f'./examples/{fn}')
+        actual = out.get_data()
+
+    assert(actual == expected)
+    
+# Python generation tests
 
 def test_webasm_py():
     check_py('webassembly.wat')
 
 def test_webpage_py():
     check_py('webpage.html')
+    
+def test_python_py():
+    check_py('python.py')
 
-def test_webpage_html():
-    rand.seed(0)        # reproducible random
+def test_cplusplus_py():
+    check_py('cplusplus.cpp')
 
-    with open('./test/expected_webpage.html', 'r') as f:
-        expected = f.read()
+# Final result tests
 
-    with ListStream() as out:
-        pypp.process('./examples/webpage.html')
-        actual = out.get_data()
+def test_webpage():
+    check_final('webpage.html')
 
-    assert(actual == expected)
+def test_python():
+    check_final('python.py')
+
+def test_cplusplus():
+    check_final('cplusplus.cpp')

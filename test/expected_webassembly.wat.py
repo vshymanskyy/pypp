@@ -20,7 +20,7 @@ def __emit(s):
     s = __res
     for func in __postproc:
         s = func(s)
-    print(s)
+    print(s, end='')
 from pypp.lang.wasm import *   # use WebAssembly helpers
 replace(";;.*?\n","\n")        # remove comments
 ANSWER = 40
