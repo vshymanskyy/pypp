@@ -19,7 +19,7 @@ import random as rand
 def check_py(fn):
     rand.seed(0)        # reproducible random
 
-    with open(f'./test/expected_{fn}.py', 'r') as f:
+    with open(f'./test/expected/{fn}.py', 'r') as f:
         expected = f.read()
 
     with ListStream() as out:
@@ -31,7 +31,7 @@ def check_py(fn):
 def check_final(fn):
     rand.seed(0)        # reproducible random
 
-    with open(f'./test/expected_{fn}', 'r') as f:
+    with open(f'./test/expected/{fn}', 'r') as f:
         expected = f.read()
 
     with ListStream() as out:

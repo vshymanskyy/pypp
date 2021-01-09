@@ -69,7 +69,7 @@ def __emit(s):
     print(s, end='')
 """
 
-    def delim(d, b='%{', e='}%'):
+    def delim(d='#', b='{', e='}'):
         nonlocal pycode, pydelim
         pydelim = d
         pycode += f"__pypp.delims[0]='{b}'\n"

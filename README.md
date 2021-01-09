@@ -1,4 +1,4 @@
-# PYPP - Python PreProcessor
+# PYPP - Python turned into PreProcessor
 
 **PYPP** formats the whole file using `f-string` syntax, with some additional helper directives and functions.  
 It should be able to process any text templates: source code, config files, docs, etc.
